@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(D:\\github\\uch/**)",
+      "Read(D:\\github\\uch/**)",
+      "Read(D:\\github\\uch/**)",
+      "Read(D:\\github\\uch\\src/**)",
+      "Read(D:\\github\\uch/**)",
+      "Read(D:\\github\\uch\\src\\components/**)",
+      "Read(D:\\github\\uch\\src\\lib/**)",
+      "Bash(npm install)",
+      "Bash(npm run dev:*)",
+      "Read(D:\\github\\uch\\src\\app/**)",
+      "Read(D:\\github\\uch\\src\\app/**)",
+      "Read(D:\\github\\uch\\src\\app/**)",
+      "Read(D:\\github\\uch\\src\\components/**)",
+      "Read(D:\\github\\uch\\public/**)",
+      "Bash(taskkill:*)",
+      "Bash(npx kill-port:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
