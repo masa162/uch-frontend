@@ -39,7 +39,8 @@ export const useSearchResults = () => {
     setError(null)
     
     try {
-      const response = await fetch(`/api/articles/search?q=${encodeURIComponent(searchTerm)}`)
+      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL
+      const response = await fetch(`${baseUrl}/api/articles/search?q=${encodeURIComponent(searchTerm)}`)
       if (response.ok) {
         const data = await response.json()
         setResults(data.articles || [])

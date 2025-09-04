@@ -23,9 +23,11 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isPasswordValidated, setIsPasswordValidated] = useState(false)
+  const [isClient, setIsClient] = useState(false)
 
-  // パスワード認証状態をlocalStorageから確認
+  // クライアントサイドでのみ実行
   useEffect(() => {
+    setIsClient(true)
     const isValidated = localStorage.getItem('uchi_password_validated')
     setIsPasswordValidated(isValidated === 'true')
   }, [])
@@ -46,16 +48,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const setPasswordValidated = (validated: boolean) => {
     setIsPasswordValidated(validated)
-    if (validated) {
-      localStorage.setItem('uchi_password_validated', 'true')
-    } else {
-      localStorage.removeItem('uchi_password_validated')
+    if (typeof window !== 'undefined') {
+      if (validated) {
+        localStorage.setItem('uchi_password_validated', 'true')
+      } else {
+        localStorage.removeItem('uchi_password_validated')
+      }
     }
   }
 
   const signOut = () => {
     // パスワード認証状態もリセット
-    localStorage.removeItem('uchi_password_validated')
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('uchi_password_validated')
+    }
     setIsPasswordValidated(false)
     // 開発環境では何もしない
     console.log('サインアウト')

@@ -16,7 +16,9 @@
       "Read(D:\\github\\uch\\src\\components/**)",
       "Read(D:\\github\\uch\\public/**)",
       "Bash(taskkill:*)",
-      "Bash(npx kill-port:*)"
+      "Bash(npx kill-port:*)",
+      "Bash(cat:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []
