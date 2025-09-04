@@ -153,15 +153,13 @@ export default function Sidebar({ onNavigate }: SidebarProps = {}) {
                 )}
                 
                 {user.role === 'GUEST' ? (
-                  <button
-                    onClick={() => {
-                      handleNavigation('/auth/signin')
-                      setShowUserMenu(false)
-                    }}
-                    className="block w-full text-left px-4 py-2 hover:bg-base-200 transition-colors text-primary"
+                  <a
+                    href={`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/signin`}
+                    className="block w-full text-left px-4 py-2 hover:bg-base-200 transition-colors text-primary no-underline"
+                    onClick={() => setShowUserMenu(false)}
                   >
                     🔑 ログイン/新規登録
-                  </button>
+                  </a>
                 ) : (
                   <button
                     onClick={handleSignOut}

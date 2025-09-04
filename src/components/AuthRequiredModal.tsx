@@ -10,7 +10,7 @@ export default function AuthRequiredModal() {
     if (modal) {
       modal.close()
     }
-    router.push('/auth/signin')
+    window.location.href = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/signin`
   }
 
   const handleClose = () => {
