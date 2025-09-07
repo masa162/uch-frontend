@@ -161,13 +161,13 @@ export default function Sidebar({ onNavigate }: SidebarProps = {}) {
                 ) : (
                   <>
                     <button
-                      onClick={() => signIn('google', { callbackUrl: '/' })}
+                      onClick={() => signIn('google', { callbackUrl: 'https://uchinokiroku.com' })}
                       className="block w-full text-left px-4 py-2 hover:bg-base-200 transition-colors text-primary"
                     >
                       Googleでログイン/登録
                     </button>
                     <button
-                      onClick={() => signIn('line', { callbackUrl: '/' })}
+                      onClick={() => signIn('line', { callbackUrl: 'https://uchinokiroku.com' })}
                       className="block w-full text-left px-4 py-2 hover:bg-base-200 transition-colors text-primary"
                     >
                       LINEでログイン/登録
@@ -182,13 +182,13 @@ export default function Sidebar({ onNavigate }: SidebarProps = {}) {
         // 未ログイン
         <div className="space-y-2">
           <button
-            onClick={() => signIn('google', { callbackUrl: '/' })}
+            onClick={() => signIn('google', { callbackUrl: 'https://uchinokiroku.com' })}
             className="btn btn-primary w-full"
           >
             Googleでログイン
           </button>
           <button
-            onClick={() => signIn('line', { callbackUrl: '/' })}
+            onClick={() => signIn('line', { callbackUrl: 'https://uchinokiroku.com' })}
             className="btn btn-secondary w-full mt-2"
           >
             LINEでログイン
