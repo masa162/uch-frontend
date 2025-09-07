@@ -1,10 +1,11 @@
 'use client'
 
-import { useAuth } from '@/contexts/AuthContext'
+import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 
 export const useAuthAction = () => {
-  const { user } = useAuth()
+  const { data: session } = useSession()
+  const user = session?.user
   const router = useRouter()
 
   const runAuthAction = (action: () => void, requireFullAuth: boolean = true) => {
@@ -17,7 +18,7 @@ export const useAuthAction = () => {
       } else {
         // フォールバック：アラートを表示
         if (confirm('この機能の利用にはユーザー登録が必要です。ログインページに移動しますか？')) {
-          router.push('/auth/signin')
+          window.location.href = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/signin`
         }
       }
       return
@@ -28,7 +29,7 @@ export const useAuthAction = () => {
   }
 
   const isActionAllowed = (requireFullAuth: boolean = true) => {
-    return user && (!requireFullAuth || user.role !== 'GUEST')
+    return !!(user && (!requireFullAuth || user.role !== 'GUEST'))
   }
 
   return { runAuthAction, isActionAllowed }

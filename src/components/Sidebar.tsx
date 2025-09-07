@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useAuth } from '@/contexts/AuthContext'
+import { useSession, signIn, signOut } from 'next-auth/react'
 import { useAuthAction } from '@/hooks/useAuthAction'
 import RealtimeSearch from '@/components/RealtimeSearch'
 
@@ -30,7 +30,8 @@ interface SidebarProps {
 
 export default function Sidebar({ onNavigate }: SidebarProps = {}) {
   const router = useRouter()
-  const { user, signOut } = useAuth()
+  const { data: session } = useSession()
+  const user = session?.user
   const { runAuthAction } = useAuthAction()
   const [showUserMenu, setShowUserMenu] = useState(false)
   const [showTags, setShowTags] = useState(false)
@@ -49,7 +50,7 @@ export default function Sidebar({ onNavigate }: SidebarProps = {}) {
 
   const handleSignOut = () => {
     if (confirm('ログアウトしますか？')) {
-      signOut()
+      signOut({ callbackUrl: '/' })
       setShowUserMenu(false)
       onNavigate?.()
     }
@@ -88,8 +89,9 @@ export default function Sidebar({ onNavigate }: SidebarProps = {}) {
         />
       </div>
       
-      {/* ユーザーメニュー */}
-      {user && (
+      {/* ユーザーメニュー or ログインボタン */}
+      {session && user ? (
+        // ログイン済み
         <div className="space-y-2">
           <div className="relative">
             <button
@@ -128,7 +130,7 @@ export default function Sidebar({ onNavigate }: SidebarProps = {}) {
             
             {showUserMenu && (
               <div className="absolute top-full left-0 right-0 mt-1 bg-base-100 border border-base-300 rounded-lg shadow-lg z-10">
-                {user.role !== 'GUEST' && (
+                {user.role !== 'GUEST' ? (
                   <>
                     <button
                       onClick={() => {
@@ -149,28 +151,34 @@ export default function Sidebar({ onNavigate }: SidebarProps = {}) {
                       ✏️ 記事を書く
                     </button>
                     <hr className="border-base-300" />
+                    <button
+                      onClick={handleSignOut}
+                      className="block w-full text-left px-4 py-2 hover:bg-base-200 transition-colors text-error"
+                    >
+                      🚪 ログアウト
+                    </button>
                   </>
-                )}
-                
-                {user.role === 'GUEST' ? (
-                  <a
-                    href={`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/signin`}
-                    className="block w-full text-left px-4 py-2 hover:bg-base-200 transition-colors text-primary no-underline"
-                    onClick={() => setShowUserMenu(false)}
-                  >
-                    🔑 ログイン/新規登録
-                  </a>
                 ) : (
                   <button
-                    onClick={handleSignOut}
-                    className="block w-full text-left px-4 py-2 hover:bg-base-200 transition-colors text-error"
+                    onClick={() => signIn()}
+                    className="block w-full text-left px-4 py-2 hover:bg-base-200 transition-colors text-primary"
                   >
-                    🚪 ログアウト
+                    🔑 ログイン/新規登録
                   </button>
                 )}
               </div>
             )}
           </div>
+        </div>
+      ) : (
+        // 未ログイン
+        <div className="space-y-2">
+          <button
+            onClick={() => signIn()}
+            className="btn btn-primary w-full"
+          >
+            🔑 ログイン/新規登録
+          </button>
         </div>
       )}
       

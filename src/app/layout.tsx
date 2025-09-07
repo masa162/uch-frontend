@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Noto_Sans_JP } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
+import PasswordGate from "@/components/PasswordGate";
 
 const notoSansJP = Noto_Sans_JP({
   variable: "--font-noto-sans-jp",
@@ -63,7 +64,9 @@ export default function RootLayout({
         className={`${notoSansJP.variable} ${shipporiminchoB1.variable} font-sans antialiased`}
       >
         <Providers>
-          {children}
+          <PasswordGate>
+            {children}
+          </PasswordGate>
         </Providers>
       </body>
     </html>
