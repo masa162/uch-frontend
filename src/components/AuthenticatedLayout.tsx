@@ -24,7 +24,7 @@ export default function AuthenticatedLayout({ children }: AuthenticatedLayoutPro
     
     // ユーザーがない場合のみサインイン画面にリダイレクト
     if (!user) {
-      window.location.href = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/signin`
+      router.push('/signin')
       return
     }
   }, [loading, router, user, skipAuth])

@@ -1,6 +1,7 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState } from 'react'
+import { useSession, signOut as nextAuthSignOut } from 'next-auth/react'
 
 interface User {
   id: string
@@ -22,6 +23,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const { data: session, status } = useSession()
   const [isPasswordValidated, setIsPasswordValidated] = useState(false)
   const [isClient, setIsClient] = useState(false)
 
@@ -32,19 +34,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsPasswordValidated(isValidated === 'true')
   }, [])
 
-  // 開発環境では認証スキップ時にダミーユーザーを設定
-  const skipAuth = process.env.NEXT_PUBLIC_SKIP_AUTH === 'true'
-  const user = skipAuth ? {
-    id: 'dev-user',
-    email: 'dev@example.com',
-    name: '開発ユーザー',
-    image: null,
-    username: 'devuser',
+  // NextAuth.jsのセッションからユーザー情報を取得
+  const user = session?.user ? {
+    id: session.user.id || '',
+    email: session.user.email,
+    name: session.user.name,
+    image: session.user.image,
+    username: session.user.name?.toLowerCase().replace(/\s+/g, '') || '',
     role: 'USER'
   } : null
 
-  // 開発環境で認証スキップの場合は loading を false にする
-  const loading = false
+  const loading = status === 'loading'
 
   const setPasswordValidated = (validated: boolean) => {
     setIsPasswordValidated(validated)
@@ -57,14 +57,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  const signOut = () => {
+  const signOut = async () => {
     // パスワード認証状態もリセット
     if (typeof window !== 'undefined') {
       localStorage.removeItem('uchi_password_validated')
     }
     setIsPasswordValidated(false)
-    // 開発環境では何もしない
-    console.log('サインアウト')
+    
+    // NextAuth.jsのサインアウトを実行
+    await nextAuthSignOut({ callbackUrl: '/signin' })
   }
 
   return (

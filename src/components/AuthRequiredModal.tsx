@@ -1,3 +1,4 @@
+
 'use client'
 
 import { useRouter } from 'next/navigation'
@@ -10,7 +11,8 @@ export default function AuthRequiredModal() {
     if (modal) {
       modal.close()
     }
-    window.location.href = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/signin`
+    // 自前のサインインページへ誘導（そこでGoogle/LINEを選択）
+    router.push('/signin')
   }
 
   const handleClose = () => {

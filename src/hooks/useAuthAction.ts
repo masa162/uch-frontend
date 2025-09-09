@@ -18,7 +18,7 @@ export const useAuthAction = () => {
       } else {
         // フォールバック：アラートを表示
         if (confirm('この機能の利用にはユーザー登録が必要です。ログインページに移動しますか？')) {
-          window.location.href = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/signin`
+          router.push('/signin')
         }
       }
       return

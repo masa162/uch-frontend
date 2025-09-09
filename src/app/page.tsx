@@ -32,9 +32,12 @@ export default function HomePage() {
     const fetchRecentArticles = async () => {
       try {
         setLoading(true)
-        // APIがまだ実装されていないので、モック データを使用
-        await new Promise(resolve => setTimeout(resolve, 1000)) // ローディング状態をシミュレート
-        setRecentArticles([])
+        const response = await fetch('http://localhost:3004/api/articles')
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+        const data = await response.json()
+        setRecentArticles(data)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'エラーが発生しました')
       } finally {

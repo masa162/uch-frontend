@@ -1,42 +1,83 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 
 const SITE_PASSWORD = process.env.NEXT_PUBLIC_SITE_PASSWORD
 const SESSION_STORAGE_KEY = 'site_password_verified'
 
+// ひらがな・カタカナの相互変換（簡易）と前後空白・大文字小文字の正規化
+const normalize = (s: string) => {
+  const trimmed = s.trim().toLowerCase()
+  // カタカナ → ひらがな
+  const hira = trimmed.replace(/[\u30a1-\u30f6]/g, (ch) =>
+    String.fromCharCode(ch.charCodeAt(0) - 0x60)
+  )
+  return hira
+}
+
+const isPasswordMatch = (input: string) => {
+  if (!SITE_PASSWORD) return false
+  const base = normalize(SITE_PASSWORD)
+  const target = normalize(input)
+  // 同義語（よみ違い）も許容
+  const synonyms = new Set<string>([
+    base,
+    normalize('きぼう'),
+    normalize('キボウ'),
+    normalize('希望'),
+    normalize('kibou'),
+  ])
+  return synonyms.has(target)
+}
+
 export default function PasswordGate({ children }: { children: React.ReactNode }) {
+  const router = useRouter()
+  const { status } = useSession()
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
 
-  // --- 変更点1：自動認証ロジック ---
-  // password変数が変更されるたびに実行される
+  // 入力の都度判定（正しければ即通過）
   useEffect(() => {
-    // パスワードが一致したら、自動的に認証を完了させる
-    if (password === SITE_PASSWORD) {
+    if (SITE_PASSWORD && isPasswordMatch(password)) {
       sessionStorage.setItem(SESSION_STORAGE_KEY, 'true')
       setIsAuthenticated(true)
       setError('')
+      // 次の認証ステップへ誘導（まだログインしていなければ /signin へ）
+      if (status !== 'authenticated') {
+        // 現在のパスが /signin でなければ遷移
+        if (typeof window !== 'undefined' && window.location.pathname !== '/signin') {
+          router.push('/signin')
+        }
+      }
     }
-  }, [password]) // passwordが変わるのを監視
+  }, [password])
 
+  // セッション記憶での通過
   useEffect(() => {
     if (SITE_PASSWORD) {
       const isVerified = sessionStorage.getItem(SESSION_STORAGE_KEY)
-      if (isVerified === 'true') {
-        setIsAuthenticated(true)
-      }
+      if (isVerified === 'true') setIsAuthenticated(true)
     } else {
       setIsAuthenticated(true)
     }
   }, [])
 
-  // 送信ボタンやEnterキーにも対応するため、この関数は残します
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (password !== SITE_PASSWORD) {
-      setError('あいことばが違います。')
+    if (SITE_PASSWORD && isPasswordMatch(password)) {
+      sessionStorage.setItem(SESSION_STORAGE_KEY, 'true')
+      setIsAuthenticated(true)
+      setError('')
+      if (status !== 'authenticated') {
+        if (typeof window !== 'undefined' && window.location.pathname !== '/signin') {
+          router.push('/signin')
+        }
+      }
+    } else {
+      setError('あいことばが違います。ひらがな・カタカナ・「希望」も試せます。')
     }
   }
 
@@ -50,16 +91,16 @@ export default function PasswordGate({ children }: { children: React.ReactNode }
         <div className="card-body">
           <h2 className="card-title">あいことばを入力してください 🏠</h2>
           <p>このサイトを閲覧するには「あいことば」が必要です。</p>
+          <p className="text-xs opacity-70 mt-1">ヒント: ひらがな・カタカナ・「希望」でも可</p>
           <form onSubmit={handleSubmit}>
             <div className="form-control">
               <input
-                // --- 変更点2：入力文字を表示 ---
-                type="text" // "password" から "text" に変更
+                type="text"
                 placeholder="あいことば"
                 className="input input-bordered w-full"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                autoFocus // ページを開いたらすぐ入力できるようにする
+                autoFocus
               />
             </div>
             {error && <p className="text-error text-sm mt-2">{error}</p>}
