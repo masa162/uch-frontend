@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 
+import AuthenticatedLayout from '@/components/AuthenticatedLayout'
+
 export default function NewArticlePage() {
   const router = useRouter()
   const { status } = useSession()
@@ -53,6 +55,7 @@ export default function NewArticlePage() {
   }
 
   return (
+    <AuthenticatedLayout>
     <div className="container mx-auto max-w-3xl py-8 px-4">
       <h1 className="text-3xl font-bold mb-6">✍️ 新しい記事を書く</h1>
 
@@ -123,6 +126,6 @@ export default function NewArticlePage() {
         </div>
       </form>
     </div>
+    </AuthenticatedLayout>
   )
 }
-
