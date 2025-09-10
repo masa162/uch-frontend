@@ -39,8 +39,7 @@ export const useSearchResults = () => {
     setError(null)
     
     try {
-      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.uchinokiroku.com'
-      const response = await fetch(`${baseUrl}/api/articles/search?q=${encodeURIComponent(searchTerm)}`, {
+      const response = await fetch(`/api/articles/search?q=${encodeURIComponent(searchTerm)}`, {
         credentials: 'include'
       })
       if (response.ok) {
