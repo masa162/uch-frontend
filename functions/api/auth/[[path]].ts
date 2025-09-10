@@ -1,4 +1,6 @@
-export const onRequest = async (ctx) => {
+import type { PagesFunction } from '@cloudflare/workers-types'
+
+export const onRequest: PagesFunction = async (ctx) => {
   const { request } = ctx
   const url = new URL(request.url)
 
@@ -7,7 +9,7 @@ export const onRequest = async (ctx) => {
   const upstream = `https://api.uchinokiroku.com/api/auth/${rest}${url.search}`
 
   // Clone request for upstream
-  const init = {
+  const init: RequestInit = {
     method: request.method,
     headers: request.headers,
     // Only pass body for non-GET/HEAD
