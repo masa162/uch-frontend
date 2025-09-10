@@ -49,7 +49,12 @@ export default function NewArticlePage() {
         const text = await res.text().catch(() => '')
         throw new Error(`HTTP ${res.status} ${text}`)
       }
-      router.push('/articles')
+      const created = await res.json().catch(() => null)
+      if (created?.slug) {
+        router.push(`/articles/${created.slug}`)
+      } else {
+        router.push('/articles')
+      }
     } catch (err) {
       const msg = err instanceof Error ? err.message : '記事の作成に失敗しました'
       setError(`記事の作成に失敗しました: ${msg}`)
