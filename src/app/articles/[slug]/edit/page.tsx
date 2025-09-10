@@ -30,13 +30,14 @@ export default function EditArticlePage() {
         const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.uchinokiroku.com'
         const res = await fetch(`${apiBase}/api/articles/${encodeURIComponent(slug)}`, { credentials: 'include' })
         if (!res.ok) throw new Error(`HTTP ${res.status}`)
-        const data = await res.json()
+        const data = (await res.json().catch(() => null)) as unknown
+        const obj = (data && typeof data === 'object') ? (data as Record<string, any>) : {}
         setForm({
-          title: data.title ?? '',
-          description: data.description ?? '',
-          content: data.content ?? '',
-          heroImageUrl: data.heroImageUrl ?? '',
-          tags: Array.isArray(data.tags) ? data.tags : [],
+          title: (obj.title as string) ?? '',
+          description: (obj.description as string | null) ?? '',
+          content: (obj.content as string) ?? '',
+          heroImageUrl: (obj.heroImageUrl as string | null) ?? '',
+          tags: Array.isArray(obj.tags) ? (obj.tags as string[]) : [],
         })
       } catch (e) {
         setError(e instanceof Error ? e.message : '読み込みに失敗しました')
@@ -121,4 +122,3 @@ export default function EditArticlePage() {
     </AuthenticatedLayout>
   )
 }
-
