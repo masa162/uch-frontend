@@ -3,11 +3,29 @@
 import { signIn, getSession } from 'next-auth/react'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 
 export default function SignInPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const router = useRouter()
+  const searchParams = useSearchParams()
+
+  // NextAuth からの error クエリをフレンドリーに表示
+  useEffect(() => {
+    const err = searchParams?.get('error')
+    if (!err) return
+    const map: Record<string, string> = {
+      OAuthSignin: 'プロバイダへの接続に失敗しました。時間をおいて再試行してください。',
+      OAuthCallback: 'Googleからの応答の処理に失敗しました。',
+      CallbackRouteError: 'コールバック処理でエラーが発生しました。',
+      AccessDenied: 'アクセスが拒否されました。',
+      Configuration: '設定エラーです。管理者へ連絡してください。',
+      Verification: '検証に失敗しました。もう一度お試しください。',
+      Default: 'サインインに失敗しました。もう一度お試しください。',
+    }
+    setError(map[err] ?? map.Default)
+  }, [searchParams])
 
   // 既にログインしている場合はリダイレクト
   useEffect(() => {
@@ -25,6 +43,7 @@ export default function SignInPage() {
       setLoading(true)
       setError('')
       const cb = typeof window !== 'undefined' ? window.location.origin + '/' : '/'
+      // 通常リダイレクト。もしポップアップ回避やエラー制御が必要なら redirect: false に変更
       await signIn('google', { callbackUrl: cb })
     } catch (err) {
       setError('Googleサインインに失敗しました。もう一度お試しください。')
