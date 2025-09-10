@@ -32,8 +32,7 @@ export default function HomePage() {
     const fetchRecentArticles = async () => {
       try {
         setLoading(true)
-        const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.uchinokiroku.com'
-        const response = await fetch(`${apiBase}/api/articles`)
+        const response = await fetch(`/api/articles`)
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`)
         }
