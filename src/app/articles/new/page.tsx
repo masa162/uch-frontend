@@ -44,7 +44,8 @@ export default function NewArticlePage() {
         body: JSON.stringify(body),
       })
       if (!res.ok) {
-        throw new Error(`HTTP ${res.status}`)
+        const text = await res.text().catch(() => '')
+        throw new Error(`HTTP ${res.status} ${text}`)
       }
       router.push('/articles')
     } catch (err) {
