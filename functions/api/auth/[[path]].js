@@ -1,4 +1,4 @@
-export const onRequest: PagesFunction = async (ctx) => {
+export const onRequest = async (ctx) => {
   const { request } = ctx
   const url = new URL(request.url)
 
@@ -7,7 +7,7 @@ export const onRequest: PagesFunction = async (ctx) => {
   const upstream = `https://api.uchinokiroku.com/api/auth/${rest}${url.search}`
 
   // Clone request for upstream
-  const init: RequestInit = {
+  const init = {
     method: request.method,
     headers: request.headers,
     // Only pass body for non-GET/HEAD
@@ -25,4 +25,3 @@ export const onRequest: PagesFunction = async (ctx) => {
     headers: resp.headers,
   })
 }
-
