@@ -11,9 +11,11 @@ export const onRequest = async (ctx) => {
   const upstreamBase = (process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.uchinokiroku.com').replace(/\/$/, '')
   const upstream = `${upstreamBase}/api/${rest}${url.search}`
 
+  const headers = new Headers(request.headers)
+  headers.set('host', new URL(upstream).host)
   const init = {
     method: request.method,
-    headers: request.headers,
+    headers,
     body: ["GET", "HEAD"].includes(request.method)
       ? undefined
       : await request.arrayBuffer(),
@@ -26,4 +28,3 @@ export const onRequest = async (ctx) => {
     headers: resp.headers,
   })
 }
-

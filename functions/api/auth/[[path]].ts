@@ -8,9 +8,11 @@ export const onRequest = async (ctx) => {
   const upstream = `https://api.uchinokiroku.com/api/auth/${rest}${url.search}`
 
   // Clone request for upstream
+  const headers = new Headers(request.headers)
+  headers.set('host', new URL(upstream).host)
   const init = {
     method: request.method,
-    headers: request.headers,
+    headers,
     // Only pass body for non-GET/HEAD
     body: ["GET", "HEAD"].includes(request.method)
       ? undefined
