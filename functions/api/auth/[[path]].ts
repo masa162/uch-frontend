@@ -8,8 +8,20 @@ export const onRequest = async (ctx) => {
   const upstream = `https://api.uchinokiroku.com/api/auth/${rest}${url.search}`
 
   // Clone request for upstream
-  const headers = new Headers(request.headers)
-  headers.set('host', new URL(upstream).host)
+  const headers = new Headers()
+  const orig = request.headers
+  const upstreamURL = new URL(upstream)
+  const cookie = orig.get('cookie')
+  if (cookie) headers.set('cookie', cookie)
+  const contentType = orig.get('content-type')
+  if (contentType) headers.set('content-type', contentType)
+  const accept = orig.get('accept')
+  if (accept) headers.set('accept', accept)
+  const ua = orig.get('user-agent')
+  if (ua) headers.set('user-agent', ua)
+  headers.set('host', upstreamURL.host)
+  headers.set('origin', `${upstreamURL.protocol}//${upstreamURL.host}`)
+  headers.set('referer', `${upstreamURL.protocol}//${upstreamURL.host}/`)
   const init = {
     method: request.method,
     headers,

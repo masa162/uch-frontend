@@ -11,8 +11,21 @@ export const onRequest = async (ctx) => {
   const upstreamBase = (process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.uchinokiroku.com').replace(/\/$/, '')
   const upstream = `${upstreamBase}/api/${rest}${url.search}`
 
-  const headers = new Headers(request.headers)
-  headers.set('host', new URL(upstream).host)
+  const headers = new Headers()
+  const orig = request.headers
+  const upstreamURL = new URL(upstream)
+  // Preserve essential headers and forward cookies explicitly
+  const cookie = orig.get('cookie')
+  if (cookie) headers.set('cookie', cookie)
+  const contentType = orig.get('content-type')
+  if (contentType) headers.set('content-type', contentType)
+  const accept = orig.get('accept')
+  if (accept) headers.set('accept', accept)
+  const ua = orig.get('user-agent')
+  if (ua) headers.set('user-agent', ua)
+  headers.set('host', upstreamURL.host)
+  headers.set('origin', `${upstreamURL.protocol}//${upstreamURL.host}`)
+  headers.set('referer', `${upstreamURL.protocol}//${upstreamURL.host}/`)
   const init = {
     method: request.method,
     headers,
