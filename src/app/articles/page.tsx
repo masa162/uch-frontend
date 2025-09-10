@@ -44,9 +44,13 @@ export default function ArticlesPage() {
   const fetchArticles = async () => {
     try {
       setLoading(true)
-      // APIがまだ実装されていないので、モック データを使用
-      await new Promise(resolve => setTimeout(resolve, 1000)) // ローディング状態をシミュレート
-      setArticles([])
+      const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.uchinokiroku.com'
+      const res = await fetch(`${apiBase}/api/articles`, { credentials: 'include' })
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`)
+      }
+      const data = (await res.json()) as unknown
+      setArticles(Array.isArray(data) ? (data as Article[]) : [])
     } catch (err) {
       setError(err instanceof Error ? err.message : 'エラーが発生しました')
     } finally {
@@ -119,17 +123,33 @@ export default function ArticlesPage() {
         </div>
 
         {/* 記事一覧 */}
-        <div className="text-center py-12">
-          <div className="text-6xl mb-4">📝</div>
-          <h2 className="text-2xl font-bold mb-2">まだ記事がありません</h2>
-          <p className="text-gray-600 mb-6">最初の記事を書いて、思い出を残しましょう</p>
-          <Link 
-            href="/articles/new"
-            className="btn btn-primary btn-lg"
-          >
-            最初の記事を書く
-          </Link>
-        </div>
+        {articles.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="text-6xl mb-4">📝</div>
+            <h2 className="text-2xl font-bold mb-2">まだ記事がありません</h2>
+            <p className="text-gray-600 mb-6">最初の記事を書いて、思い出を残しましょう</p>
+            <Link href="/articles/new" className="btn btn-primary btn-lg">
+              最初の記事を書く
+            </Link>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {articles.map((article) => (
+              <Link key={article.id} href={`/articles/${article.slug}`} className="card bg-base-100 shadow hover:shadow-lg transition-shadow">
+                <div className="card-body">
+                  <h3 className="card-title text-xl line-clamp-2">{article.title}</h3>
+                  {article.description && (
+                    <p className="text-gray-600 line-clamp-3">{article.description}</p>
+                  )}
+                  <div className="text-xs text-gray-500 mt-3">
+                    <p>by {article.author?.name || 'Unknown'}</p>
+                    <p>{formatDate(article.pubDate)}</p>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
     </AuthenticatedLayout>
   )
