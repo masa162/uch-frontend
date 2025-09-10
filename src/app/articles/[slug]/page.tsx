@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import AuthenticatedLayout from '@/components/AuthenticatedLayout'
+import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 
@@ -88,9 +89,12 @@ export default function ArticleDetailPage() {
           <ReactMarkdown remarkPlugins={[remarkGfm]}>
             {article.content || ''}
           </ReactMarkdown>
+          <div className="mt-8 flex gap-3">
+            <Link href={`/articles/${encodeURIComponent(slug as string)}/edit`} className="btn btn-outline">編集する</Link>
+            <Link href="/articles" className="btn">一覧へ戻る</Link>
+          </div>
         </article>
       ) : null}
     </AuthenticatedLayout>
   )
 }
-
