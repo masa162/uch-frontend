@@ -36,8 +36,13 @@ export default function HomePage() {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`)
         }
-        const data = await response.json()
-        setRecentArticles(data)
+        const data = (await response.json()) as unknown
+        // 型安全のため最低限のバリデーションを行う
+        if (Array.isArray(data)) {
+          setRecentArticles(data as Article[])
+        } else {
+          setRecentArticles([])
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'エラーが発生しました')
       } finally {
