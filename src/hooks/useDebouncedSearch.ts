@@ -39,11 +39,14 @@ export const useSearchResults = () => {
     setError(null)
     
     try {
-      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL
+      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.uchinokiroku.com'
       const response = await fetch(`${baseUrl}/api/articles/search?q=${encodeURIComponent(searchTerm)}`)
       if (response.ok) {
-        const data = await response.json()
-        setResults(data.articles || [])
+        const data = (await response.json()) as unknown
+        const items = (data && typeof data === 'object' && 'articles' in data)
+          ? (data as { articles?: SearchResult[] }).articles ?? []
+          : []
+        setResults(items)
       } else {
         setError('検索に失敗しました')
         setResults([])
