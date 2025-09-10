@@ -49,9 +49,12 @@ export default function NewArticlePage() {
         const text = await res.text().catch(() => '')
         throw new Error(`HTTP ${res.status} ${text}`)
       }
-      const created = await res.json().catch(() => null)
-      if (created?.slug) {
-        router.push(`/articles/${created.slug}`)
+      const created = (await res.json().catch(() => null)) as unknown
+      const slug = (created && typeof created === 'object' && 'slug' in created)
+        ? (created as { slug: string }).slug
+        : undefined
+      if (slug) {
+        router.push(`/articles/${slug}`)
       } else {
         router.push('/articles')
       }
