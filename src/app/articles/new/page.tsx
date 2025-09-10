@@ -49,7 +49,8 @@ export default function NewArticlePage() {
       }
       router.push('/articles')
     } catch (err) {
-      setError('記事の作成に失敗しました。入力内容を確認してもう一度お試しください。')
+      const msg = err instanceof Error ? err.message : '記事の作成に失敗しました'
+      setError(`記事の作成に失敗しました: ${msg}`)
     } finally {
       setSubmitting(false)
     }
