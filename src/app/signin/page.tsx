@@ -27,12 +27,12 @@ export default function SignInPage() {
     setError(map[err] ?? map.Default)
   }, [searchParams])
 
-  // 既にログインしている場合はリダイレクト
+  // 既にログインしている場合はトップへ（履歴を汚さない・errorクエリを消す）
   useEffect(() => {
     const checkSession = async () => {
       const session = await getSession()
       if (session) {
-        router.push('/')
+        router.replace('/')
       }
     }
     checkSession()
