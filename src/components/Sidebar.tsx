@@ -62,6 +62,29 @@ export default function Sidebar({ onNavigate }: SidebarProps = {}) {
     onNavigate?.()
   }
 
+  // Restore persisted UI state on mount
+  useEffect(() => {
+    try {
+      const savedShow = localStorage.getItem('sidebar.showArchive')
+      if (savedShow != null) setShowArchive(savedShow === '1')
+      const years = localStorage.getItem('sidebar.expandedYears')
+      if (years) setExpandedYears(new Set(JSON.parse(years)))
+      const months = localStorage.getItem('sidebar.expandedMonths')
+      if (months) setExpandedMonths(new Set(JSON.parse(months)))
+    } catch {}
+  }, [])
+
+  // Persist UI state when changed
+  useEffect(() => {
+    try { localStorage.setItem('sidebar.showArchive', showArchive ? '1' : '0') } catch {}
+  }, [showArchive])
+  useEffect(() => {
+    try { localStorage.setItem('sidebar.expandedYears', JSON.stringify(Array.from(expandedYears))) } catch {}
+  }, [expandedYears])
+  useEffect(() => {
+    try { localStorage.setItem('sidebar.expandedMonths', JSON.stringify(Array.from(expandedMonths))) } catch {}
+  }, [expandedMonths])
+
   // Load archive lazily when first expanded
   useEffect(() => {
     if (!showArchive) return
@@ -376,7 +399,9 @@ export default function Sidebar({ onNavigate }: SidebarProps = {}) {
                             onClick={() => toggleMonth(year, month)}
                             className="w-full flex items-center justify-between px-2 py-1 rounded hover:bg-base-200"
                           >
-                            <span>└ {parseInt(month, 10)}月</span>
+                            <span>
+                              └ {parseInt(month, 10)}月 ({(archiveHierarchy[year]?.[month] || []).length})
+                            </span>
                             <svg className={`w-4 h-4 transition-transform ${expandedMonths.has(key) ? 'rotate-90' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"/></svg>
                           </button>
                           {expandedMonths.has(key) && (
