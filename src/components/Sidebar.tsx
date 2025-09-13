@@ -266,8 +266,9 @@ export default function Sidebar({ onNavigate }: SidebarProps = {}) {
                         const cb = typeof window !== 'undefined' ? window.location.origin + '/' : 'https://uchinokiroku.com/'
                         try {
                           const r = await fetch(`${apiBase}/api/auth/csrf`, { credentials: 'include' })
-                          const j = await r.json().catch(() => null)
-                          const token: string = j?.csrfToken || ''
+                          type CsrfResp = { csrfToken?: string }
+                          const j = (await r.json().catch(() => null)) as CsrfResp | null
+                          const token: string = j?.csrfToken ?? ''
                           const form = document.createElement('form')
                           form.method = 'POST'
                           form.action = `${apiBase}/api/auth/signin/google?callbackUrl=${encodeURIComponent(cb)}`
@@ -288,8 +289,9 @@ export default function Sidebar({ onNavigate }: SidebarProps = {}) {
                         const cb = typeof window !== 'undefined' ? window.location.origin + '/' : 'https://uchinokiroku.com/'
                         try {
                           const r = await fetch(`${apiBase}/api/auth/csrf`, { credentials: 'include' })
-                          const j = await r.json().catch(() => null)
-                          const token: string = j?.csrfToken || ''
+                          type CsrfResp = { csrfToken?: string }
+                          const j = (await r.json().catch(() => null)) as CsrfResp | null
+                          const token: string = j?.csrfToken ?? ''
                           const form = document.createElement('form')
                           form.method = 'POST'
                           form.action = `${apiBase}/api/auth/signin/line?callbackUrl=${encodeURIComponent(cb)}`
@@ -319,8 +321,9 @@ export default function Sidebar({ onNavigate }: SidebarProps = {}) {
               const cb = typeof window !== 'undefined' ? window.location.origin + '/' : 'https://uchinokiroku.com/'
               try {
                 const r = await fetch(`${apiBase}/api/auth/csrf`, { credentials: 'include' })
-                const j = await r.json().catch(() => null)
-                const token: string = j?.csrfToken || ''
+                type CsrfResp = { csrfToken?: string }
+                const j = (await r.json().catch(() => null)) as CsrfResp | null
+                const token: string = j?.csrfToken ?? ''
                 const form = document.createElement('form')
                 form.method = 'POST'
                 form.action = `${apiBase}/api/auth/signin/google?callbackUrl=${encodeURIComponent(cb)}`
@@ -341,8 +344,9 @@ export default function Sidebar({ onNavigate }: SidebarProps = {}) {
               const cb = typeof window !== 'undefined' ? window.location.origin + '/' : 'https://uchinokiroku.com/'
               try {
                 const r = await fetch(`${apiBase}/api/auth/csrf`, { credentials: 'include' })
-                const j = await r.json().catch(() => null)
-                const token: string = j?.csrfToken || ''
+                type CsrfResp = { csrfToken?: string }
+                const j = (await r.json().catch(() => null)) as CsrfResp | null
+                const token: string = j?.csrfToken ?? ''
                 const form = document.createElement('form')
                 form.method = 'POST'
                 form.action = `${apiBase}/api/auth/signin/line?callbackUrl=${encodeURIComponent(cb)}`
