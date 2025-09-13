@@ -89,6 +89,16 @@ export default function PasswordGate({ children }: { children: React.ReactNode }
     <div className="fixed inset-0 bg-base-100 flex items-center justify-center z-50">
       <div className="card w-96 bg-base-200 shadow-xl">
         <div className="card-body">
+          <div className="w-full flex justify-center mb-3">
+            <img
+              src="/images/ogp/ogp.png"
+              alt="うちのきろく ロゴ画像"
+              className="rounded-lg shadow max-w-[220px] w-full h-auto"
+              width={220}
+              height={120}
+              loading="eager"
+            />
+          </div>
           <h2 className="card-title">あいことばを入力してください 🏠</h2>
           {/* 説明テキストは非表示に変更（要望により削除） */}
           <form onSubmit={handleSubmit}>
