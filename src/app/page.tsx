@@ -32,7 +32,9 @@ export default function HomePage() {
     const fetchRecentArticles = async () => {
       try {
         setLoading(true)
-        const response = await fetch(`/api/articles`)
+        // Prefer explicit API base to avoid 404 when edge functions are disabled
+        const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.uchinokiroku.com'
+        const response = await fetch(`${apiBase}/api/articles`, { credentials: 'include' })
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`)
         }
