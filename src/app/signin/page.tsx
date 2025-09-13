@@ -44,21 +44,10 @@ export default function SignInPage() {
       setError('')
       const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.uchinokiroku.com'
       const cb = typeof window !== 'undefined' ? window.location.origin + '/' : 'https://uchinokiroku.com/'
-      // Fetch CSRF on API (sets cookies on api domain), then POST to provider to skip provider choice page
-      const csrfRes = await fetch(`${apiBase}/api/auth/csrf`, { credentials: 'include' })
-      type CsrfResp = { csrfToken?: string }
-      const csrf = (await csrfRes.json().catch(() => null)) as CsrfResp | null
-      const token: string = csrf?.csrfToken ?? ''
-      const form = document.createElement('form')
-      form.method = 'POST'
-      form.action = `${apiBase}/api/auth/signin/google?callbackUrl=${encodeURIComponent(cb)}`
-      const input = document.createElement('input')
-      input.type = 'hidden'
-      input.name = 'csrfToken'
-      input.value = token || ''
-      form.appendChild(input)
-      document.body.appendChild(form)
-      form.submit()
+      // Top-level redirect to API domain (stable across browsers)
+      if (typeof window !== 'undefined') {
+        window.location.href = `${apiBase}/api/auth/signin/google?callbackUrl=${encodeURIComponent(cb)}`
+      }
     } catch (err) {
       setError('Googleサインインに失敗しました。もう一度お試しください。')
     } finally {
@@ -72,20 +61,9 @@ export default function SignInPage() {
       setError('')
       const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.uchinokiroku.com'
       const cb = typeof window !== 'undefined' ? window.location.origin + '/' : 'https://uchinokiroku.com/'
-      const csrfRes = await fetch(`${apiBase}/api/auth/csrf`, { credentials: 'include' })
-      type CsrfResp = { csrfToken?: string }
-      const csrf = (await csrfRes.json().catch(() => null)) as CsrfResp | null
-      const token: string = csrf?.csrfToken ?? ''
-      const form = document.createElement('form')
-      form.method = 'POST'
-      form.action = `${apiBase}/api/auth/signin/line?callbackUrl=${encodeURIComponent(cb)}`
-      const input = document.createElement('input')
-      input.type = 'hidden'
-      input.name = 'csrfToken'
-      input.value = token || ''
-      form.appendChild(input)
-      document.body.appendChild(form)
-      form.submit()
+      if (typeof window !== 'undefined') {
+        window.location.href = `${apiBase}/api/auth/signin/line?callbackUrl=${encodeURIComponent(cb)}`
+      }
     } catch (err) {
       setError('LINEサインインに失敗しました。もう一度お試しください。')
     } finally {
