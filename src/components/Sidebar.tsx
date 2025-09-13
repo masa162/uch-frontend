@@ -1,10 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSession, signIn, signOut } from 'next-auth/react'
 import { useAuthAction } from '@/hooks/useAuthAction'
 import RealtimeSearch from '@/components/RealtimeSearch'
+import Link from 'next/link'
 
 interface Tag {
   name: string
@@ -15,7 +16,7 @@ interface Article {
   id: string
   title: string
   slug: string
-  pubDate: Date
+  pubDate: string | Date
 }
 
 interface ArchiveHierarchy {
@@ -59,6 +60,82 @@ export default function Sidebar({ onNavigate }: SidebarProps = {}) {
   const handleTagClick = (tagName: string) => {
     router.push(`/tags/${encodeURIComponent(tagName)}`)
     onNavigate?.()
+  }
+
+  // Load archive lazily when first expanded
+  useEffect(() => {
+    if (!showArchive) return
+    if (Object.keys(archiveHierarchy).length > 0) return
+    ;(async () => {
+      try {
+        setLoadingArchive(true)
+        const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.uchinokiroku.com'
+        const res = await fetch(`${apiBase}/api/articles`, { credentials: 'include' })
+        if (!res.ok) throw new Error(`HTTP ${res.status}`)
+        const items = (await res.json()) as any[]
+        const grouped: ArchiveHierarchy = {}
+        for (const a of Array.isArray(items) ? items : []) {
+          const dateStr: string = a.pubDate || a.createdAt
+          const d = new Date(dateStr)
+          if (isNaN(d.getTime())) continue
+          const year = String(d.getFullYear())
+          const monthNum = d.getMonth() + 1 // 1-12
+          const monthKey = String(monthNum)
+          const article: Article = {
+            id: a.id,
+            title: a.title || '(無題)',
+            slug: a.slug,
+            pubDate: dateStr,
+          }
+          grouped[year] ||= {}
+          grouped[year][monthKey] ||= []
+          grouped[year][monthKey].push(article)
+        }
+        // Sort articles in each month by date desc if possible (pubDate desc)
+        for (const y of Object.keys(grouped)) {
+          for (const m of Object.keys(grouped[y])) {
+            grouped[y][m].sort((a, b) => {
+              const ta = new Date(a.pubDate as string).getTime()
+              const tb = new Date(b.pubDate as string).getTime()
+              return isNaN(tb - ta) ? 0 : tb - ta
+            })
+          }
+        }
+        setArchiveHierarchy(grouped)
+      } catch (e) {
+        console.error('Failed to load archive', e)
+      } finally {
+        setLoadingArchive(false)
+      }
+    })()
+  }, [showArchive, archiveHierarchy])
+
+  const orderedYears = useMemo(() => {
+    return Object.keys(archiveHierarchy)
+      .map(Number)
+      .sort((a, b) => b - a)
+      .map(String)
+  }, [archiveHierarchy])
+
+  const getOrderedMonths = (year: string) =>
+    Object.keys(archiveHierarchy[year] || {})
+      .map(Number)
+      .sort((a, b) => b - a)
+      .map(String)
+
+  const toggleYear = (year: string) => {
+    const next = new Set(expandedYears)
+    if (next.has(year)) next.delete(year)
+    else next.add(year)
+    setExpandedYears(next)
+  }
+
+  const toggleMonth = (year: string, month: string) => {
+    const key = `${year}-${month.padStart(2, '0')}`
+    const next = new Set(expandedMonths)
+    if (next.has(key)) next.delete(key)
+    else next.add(key)
+    setExpandedMonths(next)
   }
 
   return (
@@ -256,6 +333,76 @@ export default function Sidebar({ onNavigate }: SidebarProps = {}) {
             料理
           </button>
         </div>
+      </div>
+
+      {/* 記事一覧（アーカイブ） */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <h3 className="font-bold text-primary-dark">📁 記事一覧</h3>
+          <button
+            onClick={() => setShowArchive((v) => !v)}
+            className="text-sm text-primary hover:underline"
+          >
+            {showArchive ? '閉じる' : '開く'}
+          </button>
+        </div>
+
+        {showArchive && (
+          <div className="mt-2">
+            {loadingArchive && (
+              <div className="text-sm text-base-content/70">読み込み中...</div>
+            )}
+            {!loadingArchive && orderedYears.length === 0 && (
+              <div className="text-sm text-base-content/60">記事がありません</div>
+            )}
+
+            {!loadingArchive && orderedYears.map((year) => (
+              <div key={year} className="mb-2">
+                <button
+                  onClick={() => toggleYear(year)}
+                  className="w-full flex items-center justify-between px-2 py-1 rounded hover:bg-base-200"
+                >
+                  <span className="font-semibold">{year}年</span>
+                  <svg className={`w-4 h-4 transition-transform ${expandedYears.has(year) ? 'rotate-90' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"/></svg>
+                </button>
+
+                {expandedYears.has(year) && (
+                  <div className="ml-3 mt-1">
+                    {getOrderedMonths(year).map((month) => {
+                      const key = `${year}-${month.padStart(2, '0')}`
+                      return (
+                        <div key={key} className="mb-1">
+                          <button
+                            onClick={() => toggleMonth(year, month)}
+                            className="w-full flex items-center justify-between px-2 py-1 rounded hover:bg-base-200"
+                          >
+                            <span>└ {parseInt(month, 10)}月</span>
+                            <svg className={`w-4 h-4 transition-transform ${expandedMonths.has(key) ? 'rotate-90' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"/></svg>
+                          </button>
+                          {expandedMonths.has(key) && (
+                            <ul className="ml-5 mt-1 space-y-1">
+                              {(archiveHierarchy[year]?.[month] || []).map((a) => (
+                                <li key={a.id}>
+                                  <Link
+                                    href={`/articles/${a.slug}`}
+                                    className="text-sm hover:underline"
+                                    onClick={onNavigate}
+                                  >
+                                    {a.title}
+                                  </Link>
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
