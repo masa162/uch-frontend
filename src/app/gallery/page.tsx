@@ -63,9 +63,9 @@ export default function GalleryPage() {
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
           {items.map((m) => (
-            <a key={m.id} href={m.url} target="_blank" rel="noreferrer" className="block group">
+            <a key={m.id} href={`${apiBase}/api/media/${m.id}/image`} target="_blank" rel="noreferrer" className="block group">
               <img
-                src={m.thumbnailUrl}
+                src={`${apiBase}/api/media/${m.id}/image`}
                 alt={m.id}
                 className="w-full h-40 object-cover rounded-lg shadow group-hover:opacity-90 transition"
                 loading="lazy"
