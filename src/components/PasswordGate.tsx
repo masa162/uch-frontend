@@ -90,8 +90,7 @@ export default function PasswordGate({ children }: { children: React.ReactNode }
       <div className="card w-96 bg-base-200 shadow-xl">
         <div className="card-body">
           <h2 className="card-title">あいことばを入力してください 🏠</h2>
-          <p>このサイトを閲覧するには「あいことば」が必要です。</p>
-          <p className="text-xs opacity-70 mt-1">ヒント: ひらがな・カタカナ・「希望」でも可</p>
+          {/* 説明テキストは非表示に変更（要望により削除） */}
           <form onSubmit={handleSubmit}>
             <div className="form-control">
               <input
