@@ -42,10 +42,11 @@ export default function SignInPage() {
     try {
       setLoading(true)
       setError('')
+      const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.uchinokiroku.com'
       const cb = typeof window !== 'undefined' ? window.location.origin + '/' : 'https://uchinokiroku.com/'
       if (typeof window !== 'undefined') {
-        // Go through frontend Pages Function to preserve Origin/Referer for NextAuth
-        window.location.href = `/api/auth/signin/google?callbackUrl=${encodeURIComponent(cb)}`
+        // Top-level redirect to API domain (stable across browsers)
+        window.location.href = `${apiBase}/api/auth/signin/google?callbackUrl=${encodeURIComponent(cb)}`
       }
     } catch (err) {
       setError('Googleサインインに失敗しました。もう一度お試しください。')
@@ -58,9 +59,10 @@ export default function SignInPage() {
     try {
       setLoading(true)
       setError('')
+      const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.uchinokiroku.com'
       const cb = typeof window !== 'undefined' ? window.location.origin + '/' : 'https://uchinokiroku.com/'
       if (typeof window !== 'undefined') {
-        window.location.href = `/api/auth/signin/line?callbackUrl=${encodeURIComponent(cb)}`
+        window.location.href = `${apiBase}/api/auth/signin/line?callbackUrl=${encodeURIComponent(cb)}`
       }
     } catch (err) {
       setError('LINEサインインに失敗しました。もう一度お試しください。')
