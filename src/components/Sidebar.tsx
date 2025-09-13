@@ -262,10 +262,9 @@ export default function Sidebar({ onNavigate }: SidebarProps = {}) {
                   <>
                     <button
                       onClick={() => {
-                        const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.uchinokiroku.com'
                         const cb = typeof window !== 'undefined' ? window.location.origin + '/' : 'https://uchinokiroku.com/'
                         if (typeof window !== 'undefined') {
-                          window.location.href = `${apiBase}/api/auth/signin/google?callbackUrl=${encodeURIComponent(cb)}`
+                          window.location.href = `/api/auth/signin/google?callbackUrl=${encodeURIComponent(cb)}`
                         }
                       }}
                       className="block w-full text-left px-4 py-2 hover:bg-base-200 transition-colors text-primary"
@@ -274,10 +273,9 @@ export default function Sidebar({ onNavigate }: SidebarProps = {}) {
                     </button>
                     <button
                       onClick={() => {
-                        const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.uchinokiroku.com'
                         const cb = typeof window !== 'undefined' ? window.location.origin + '/' : 'https://uchinokiroku.com/'
                         if (typeof window !== 'undefined') {
-                          window.location.href = `${apiBase}/api/auth/signin/line?callbackUrl=${encodeURIComponent(cb)}`
+                          window.location.href = `/api/auth/signin/line?callbackUrl=${encodeURIComponent(cb)}`
                         }
                       }}
                       className="block w-full text-left px-4 py-2 hover:bg-base-200 transition-colors text-primary"
@@ -295,10 +293,9 @@ export default function Sidebar({ onNavigate }: SidebarProps = {}) {
         <div className="space-y-2">
           <button
             onClick={() => {
-              const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.uchinokiroku.com'
               const cb = typeof window !== 'undefined' ? window.location.origin + '/' : 'https://uchinokiroku.com/'
               if (typeof window !== 'undefined') {
-                window.location.href = `${apiBase}/api/auth/signin/google?callbackUrl=${encodeURIComponent(cb)}`
+                window.location.href = `/api/auth/signin/google?callbackUrl=${encodeURIComponent(cb)}`
               }
             }}
             className="btn btn-primary w-full"
@@ -307,10 +304,9 @@ export default function Sidebar({ onNavigate }: SidebarProps = {}) {
           </button>
           <button
             onClick={() => {
-              const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.uchinokiroku.com'
               const cb = typeof window !== 'undefined' ? window.location.origin + '/' : 'https://uchinokiroku.com/'
               if (typeof window !== 'undefined') {
-                window.location.href = `${apiBase}/api/auth/signin/line?callbackUrl=${encodeURIComponent(cb)}`
+                window.location.href = `/api/auth/signin/line?callbackUrl=${encodeURIComponent(cb)}`
               }
             }}
             className="btn btn-secondary w-full mt-2"
