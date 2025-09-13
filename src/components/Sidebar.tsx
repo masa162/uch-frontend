@@ -261,13 +261,25 @@ export default function Sidebar({ onNavigate }: SidebarProps = {}) {
                 ) : (
                   <>
                     <button
-                      onClick={() => signIn('google', { callbackUrl: typeof window !== 'undefined' ? window.location.origin + '/' : '/' })}
+                      onClick={() => {
+                        const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.uchinokiroku.com'
+                        const cb = typeof window !== 'undefined' ? window.location.origin + '/' : 'https://uchinokiroku.com/'
+                        if (typeof window !== 'undefined') {
+                          window.location.href = `${apiBase}/api/auth/signin/google?callbackUrl=${encodeURIComponent(cb)}`
+                        }
+                      }}
                       className="block w-full text-left px-4 py-2 hover:bg-base-200 transition-colors text-primary"
                     >
                       Googleでログイン/登録
                     </button>
                     <button
-                      onClick={() => signIn('line', { callbackUrl: typeof window !== 'undefined' ? window.location.origin + '/' : '/' })}
+                      onClick={() => {
+                        const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.uchinokiroku.com'
+                        const cb = typeof window !== 'undefined' ? window.location.origin + '/' : 'https://uchinokiroku.com/'
+                        if (typeof window !== 'undefined') {
+                          window.location.href = `${apiBase}/api/auth/signin/line?callbackUrl=${encodeURIComponent(cb)}`
+                        }
+                      }}
                       className="block w-full text-left px-4 py-2 hover:bg-base-200 transition-colors text-primary"
                     >
                       LINEでログイン/登録
@@ -282,13 +294,25 @@ export default function Sidebar({ onNavigate }: SidebarProps = {}) {
         // 未ログイン
         <div className="space-y-2">
           <button
-            onClick={() => signIn('google', { callbackUrl: typeof window !== 'undefined' ? window.location.origin + '/' : '/' })}
+            onClick={() => {
+              const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.uchinokiroku.com'
+              const cb = typeof window !== 'undefined' ? window.location.origin + '/' : 'https://uchinokiroku.com/'
+              if (typeof window !== 'undefined') {
+                window.location.href = `${apiBase}/api/auth/signin/google?callbackUrl=${encodeURIComponent(cb)}`
+              }
+            }}
             className="btn btn-primary w-full"
           >
             Googleでログイン
           </button>
           <button
-            onClick={() => signIn('line', { callbackUrl: typeof window !== 'undefined' ? window.location.origin + '/' : '/' })}
+            onClick={() => {
+              const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.uchinokiroku.com'
+              const cb = typeof window !== 'undefined' ? window.location.origin + '/' : 'https://uchinokiroku.com/'
+              if (typeof window !== 'undefined') {
+                window.location.href = `${apiBase}/api/auth/signin/line?callbackUrl=${encodeURIComponent(cb)}`
+              }
+            }}
             className="btn btn-secondary w-full mt-2"
           >
             LINEでログイン

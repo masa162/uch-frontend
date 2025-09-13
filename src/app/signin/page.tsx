@@ -42,9 +42,11 @@ export default function SignInPage() {
     try {
       setLoading(true)
       setError('')
-      const cb = typeof window !== 'undefined' ? window.location.origin + '/' : '/'
-      // 通常リダイレクト。もしポップアップ回避やエラー制御が必要なら redirect: false に変更
-      await signIn('google', { callbackUrl: cb })
+      const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.uchinokiroku.com'
+      const cb = typeof window !== 'undefined' ? window.location.origin + '/' : 'https://uchinokiroku.com/'
+      if (typeof window !== 'undefined') {
+        window.location.href = `${apiBase}/api/auth/signin/google?callbackUrl=${encodeURIComponent(cb)}`
+      }
     } catch (err) {
       setError('Googleサインインに失敗しました。もう一度お試しください。')
     } finally {
@@ -56,8 +58,11 @@ export default function SignInPage() {
     try {
       setLoading(true)
       setError('')
-      const cb = typeof window !== 'undefined' ? window.location.origin + '/' : '/'
-      await signIn('line', { callbackUrl: cb })
+      const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.uchinokiroku.com'
+      const cb = typeof window !== 'undefined' ? window.location.origin + '/' : 'https://uchinokiroku.com/'
+      if (typeof window !== 'undefined') {
+        window.location.href = `${apiBase}/api/auth/signin/line?callbackUrl=${encodeURIComponent(cb)}`
+      }
     } catch (err) {
       setError('LINEサインインに失敗しました。もう一度お試しください。')
     } finally {
