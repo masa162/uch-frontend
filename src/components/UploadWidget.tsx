@@ -47,7 +47,21 @@ export default function UploadWidget({ onUploaded }: { onUploaded?: () => void }
         if (!done.ok) throw new Error(`record ${done.status}`)
         outcome.ok = true
       } catch (err: any) {
-        outcome.error = String(err?.message || err)
+        // Fallback: upload via API (multipart) when presigned PUT fails (likely CORS)
+        try {
+          const fd = new FormData()
+          fd.append('file', file)
+          const up2 = await fetch(`${apiBase}/api/media/upload-direct`, {
+            method: 'POST',
+            credentials: 'include',
+            body: fd,
+          })
+          if (!up2.ok) throw new Error(`direct ${up2.status}`)
+          outcome.ok = true
+          outcome.error = undefined
+        } catch (e2: any) {
+          outcome.error = String(e2?.message || err?.message || err)
+        }
       }
       outcomes.push(outcome)
       setResults((prev) => [...prev, outcome])
@@ -77,4 +91,3 @@ export default function UploadWidget({ onUploaded }: { onUploaded?: () => void }
     </div>
   )
 }
-
